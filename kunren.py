@@ -1,6 +1,4 @@
-import time
 import sys
-import numpy
 from ankiconnect import *
 from utils import *
 from kanjivg import *
