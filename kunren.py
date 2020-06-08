@@ -1,3 +1,4 @@
+import argparse
 import sys
 from ankiconnect import *
 from utils import *
@@ -12,18 +13,18 @@ import re
 
 
 class Kunren:
-    def __init__(self,char=0):
+    def __init__(self,char=None,field="Expression",startThreshold=10,drawThreshold=25):
         checkforkanjivg()
         pyg.init()
-        self.startThreshold = 10
-        self.drawThreshold = 25
+        self.startThreshold = startThreshold
+        self.drawThreshold = drawThreshold
         self.screen = pyg.display.set_mode((109,109))
         self.screen.fill(pyg.Color('white'))
         self.draw = False
         self.stroke = []
         self.p = (0,0) #keeps track of previous x and y of mouse to draw continuous lines.
-        if char==0:
-            self.exp = splitKanji(getCard())
+        if char==None:
+            self.exp = splitKanji(getCard(field))
         else:
             self.exp = splitKanji(char)
         self.strokes = [parse(i,200) for i in self.exp]
@@ -116,9 +117,16 @@ class Kunren:
                 self.drawStroke()
 
 
+def printHelp():
+    print('unhelpful help message')
 
 def main():
-    #kunren = Kunren("今日")
-    kunren = Kunren()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s',default=5,type=int,help="Start point size in px. default 5px")
+    parser.add_argument('-d',default=25,type=int,help="Stroke forgiveness in average px from actual. default 25px")
+    parser.add_argument('--field',default="Expression",type=str,help="name of anki card field containing kanji")
+    args = vars(parser.parse_args())
+    kunren = Kunren(startThreshold=args['s'],drawThreshold=args['d'],field=args['field'])
+
 
 main()

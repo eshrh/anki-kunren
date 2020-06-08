@@ -16,4 +16,4 @@ Currently, you can:
 This project uses KanjiVG stroke order data.
 It is licensed by Ulrich Apel under the [Creative Commons Attribution Share-Alike 3.0](https://creativecommons.org/licenses/by-sa/3.0/) license.
 
-The KanjiVG reading code is taken from [Kanji Colorizer](https://github.com/cayennes/kanji-colorize) which is also the source of the initial inspiration
+The KanjiVG reading code is taken from [Kanji Colorizer](https://github.com/cayennes/kanji-colorize) which is also the source of my initial inspiration

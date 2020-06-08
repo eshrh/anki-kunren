@@ -16,8 +16,8 @@ def invoke(action, **params):
         raise Exception(response['error'])
     return response['result']
 
-def getCard(field="Expression"):
-    field = "Expression"
+def getCard(field):
     card = invoke('guiCurrentCard')
     kanji = card['fields'][field]['value']
     return kanji
+
