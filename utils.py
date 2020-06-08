@@ -28,6 +28,6 @@ def pythagDistance(a,b):
     return math.sqrt((b[0]-a[0])**2+(b[1]-a[1])**2)
 
 def checkforkanjivg():
-    if not os.exists("kanji"):
+    if not os.path.exists("kanji"):
         print("KanjiVG data not found.")
         sys.exit()
