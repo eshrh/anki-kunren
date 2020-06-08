@@ -1,0 +1,2 @@
+global-include kanji
+global-include . *.svg
