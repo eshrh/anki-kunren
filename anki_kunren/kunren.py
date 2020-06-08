@@ -1,3 +1,4 @@
+import time
 import argparse
 import sys
 import os
@@ -17,37 +18,67 @@ class Kunren:
         pyg.init()
         self.startThreshold = startThreshold
         self.drawThreshold = drawThreshold
+        self.field = field
         self.screen = pyg.display.set_mode((109,109))
         self.screen.fill(pyg.Color('white'))
         self.draw = False
         self.stroke = []
         self.p = (0,0) #keeps track of previous x and y of mouse to draw continuous lines.
         if char==None:
-            self.exp = splitKanji(getCard(field))
+            self.card = getCard(field)
+            self.exp = splitKanji(self.card)
         else:
             self.exp = splitKanji(char)
-        print(len(self.exp))
         self.strokes = [parse(i,200) for i in self.exp]
         self.kanji = 0
         self.curstroke = 0
+        self.error = [0,0] #misstarts,total pixel error
         self.paused = False
 
         while True:
+            if self.paused:
+                if self.kanji<=len(self.exp)-1:
+                    self.nextKanji()
+                else:
+                    newcard = getCard(self.field)
+                    if newcard != self.card:
+                        self.newCard(newcard)
+
             for event in pyg.event.get():
                 self.inputListen(event)
             pyg.display.flip()
 
+    def newCard(self,card):
+        self.card = card
+        self.exp = splitKanji(self.card)
+        self.strokes = [parse(i,200) for i in self.exp]
+        self.paused = False
+        self.kanji,self.curstroke = 0,0
+        self.redraw(self.kanji,self.curstroke)
+
+    def nextKanji(self):
+        time.sleep(0.1)
+        self.printSummary()
+        self.curstroke=0
+        self.kanji+=1
+        self.error = [0,0]
+        self.redraw(self.kanji,self.curstroke)
+        self.paused=False
+
+    def printSummary(self):
+        print("kanji:",self.exp[self.kanji].character,"finished. misstarts:",self.error[0],"avg pixel error:",self.error[1]/len(self.strokes[self.kanji]))
+
+
+
     def startStroke(self):
-        if self.curstroke>=len(self.strokes[self.kanji]):
-            self.paused = True
+        if self.paused:
             return
-        else:
-            self.paused = False
 
         start = self.strokes[self.kanji][self.curstroke][0]
         if pythagDistance(start,pyg.mouse.get_pos())>self.startThreshold:
             start = [int(i) for i in self.strokes[self.kanji][self.curstroke][0]]
             pyg.draw.circle(self.screen,pyg.Color('red'),start,self.startThreshold)
+            self.error[0]+=1
         else:
             self.draw = True
             self.stroke = []
@@ -60,6 +91,9 @@ class Kunren:
         else:
             self.redraw(self.kanji,self.curstroke)
         self.draw = False
+
+        if self.curstroke>=len(self.strokes[self.kanji]):
+            self.paused = True
 
     def drawStroke(self):
         if self.draw:
@@ -76,6 +110,7 @@ class Kunren:
         self.screen.fill(pyg.Color('white'))
         for i in range(number):
             pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[kanji][i])
+
     def displayNextStroke(self):
         pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji][self.curstroke])
 
@@ -85,6 +120,8 @@ class Kunren:
 
     def hintStroke(self):
         pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
+        #TODO slow draw hints
+        #TODO catch last stroke
 
     def grade(self,stroke,real,thresh):
         if len(stroke)==0:
@@ -96,16 +133,18 @@ class Kunren:
         for n,i in enumerate(real):
             sumdiff += min([pythagDistance(i,j) for j in stroke])
         avg = sumdiff/len(stroke)
+        if avg<=thresh:
+            self.error[1]+=avg
         return avg<=thresh
 
     def inputListen(self, event):
         if event.type==pyg.KEYDOWN:
             if event.key==pyg.K_n:
                 if not self.kanji==len(self.exp)-1:
-                    self.kanji+=1
-                    self.curstroke = 0
-                    self.screen.fill(pyg.Color('white'))
-                    self.paused = False
+                    self.nextKanji()
+            if event.key==pyg.K_c:
+                self.newCard(getCard(self.field))
+
             if event.key==pyg.K_h:
                 self.hintStroke()
             if event.key==pyg.K_ESCAPE:

@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setuptools.setup(
       name='anki-kunren',
-      version='1.0.2',
+      version='1.1.0',
       description='Anki practice tool to drill japanese kanji stroke order and practice writing.',
       long_description=long_description,
       long_description_content_type="text/markdown",
