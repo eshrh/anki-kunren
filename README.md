@@ -1,5 +1,5 @@
 # Anki Kunren (暗記 訓練)
-Anki Kunren is a program to drill kanji stroke order and practice writing in sync with an Anki study session.
+Anki Kunren is a program to drill japanese kanji stroke order and practice writing in sync with an Anki study session.
 This is a work in progress.
 
 ## Installation
