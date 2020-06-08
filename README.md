@@ -9,8 +9,21 @@ Currently, you can:
 1. clone this repository: `git clone https://github.com/eshrh/anki-kunren`
 2. install dependencies: `pip install pygame svg.path`
 3. install [anki-connect](https://ankiweb.net/shared/info/2055492159) with code `2055492159`
-4. start an anki study session on a card model with a field called "Expression" containing your kanji
-5. run with kunren.py
+5. run with kunren.py.
+
+## Usage
+usage: `kunren.py [-h] [-s S] [-d D] [--field FIELD]`
+
+optional arguments:
++ `-h, --help` Show help message
++ `-s S` Start point size in px. default 5px
++ `-d D` Stroke forgiveness in average px from actual. default 25px
++ `--field FIELD` name of anki card field containing kanji. defaults to "Expression"
+
+While running, you can use the following controls:
++ `h`: hint the current stroke
++ `n`: next kanji in the expression
++ `esc`: quit
 
 ## Other
 This project uses KanjiVG stroke order data.

@@ -55,12 +55,10 @@ class Kunren:
 
     def endStroke(self):
         if self.grade(self.stroke,self.strokes[self.kanji][self.curstroke],self.drawThreshold):
-            self.screen.fill(pyg.Color('white'))
             self.curstroke+=1
-            self.displayAllStrokesUntil(self.kanji,self.curstroke)
+            self.redraw(self.kanji,self.curstroke)
         else:
-            self.screen.fill(pyg.Color('white'))
-            self.displayAllStrokesUntil(self.kanji,self.curstroke)
+            self.redraw(self.kanji,self.curstroke)
         self.draw = False
 
     def drawStroke(self):
@@ -71,17 +69,22 @@ class Kunren:
             self.stroke.append(pyg.mouse.get_pos())
 
     def correctStroke(self):
-        self.screen.fill(pyg.Color('white'))
-        self.displayNextStroke()
+        self.redraw(self.kanji,self.curstroke)
         self.curstroke+=1
 
-    def displayAllStrokesUntil(self,kanji,number):
+    def redraw(self,kanji,number):
+        self.screen.fill(pyg.Color('white'))
         for i in range(number):
             pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[kanji][i])
     def displayNextStroke(self):
         pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji][self.curstroke])
+
     def displayCurrentKanji(self,kanji):
-        pyg.draw.aalines(self.screen,pyg.Color('blue'),self.strokes[self.kanji])
+        #broken
+        pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji])
+
+    def hintStroke(self):
+        pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
 
     def grade(self,stroke,real,thresh):
         if len(stroke)==0:
@@ -97,15 +100,14 @@ class Kunren:
 
     def inputListen(self, event):
         if event.type==pyg.KEYDOWN:
-            if event.key==pyg.K_c:
-                self.screen.fill(pyg.Color('white'))
-                self.displayAllStrokesUntil(self,self.kanji,self.curstroke)
             if event.key==pyg.K_n:
                 if not self.kanji==len(self.exp)-1:
                     self.kanji+=1
                     self.curstroke = 0
                     self.screen.fill(pyg.Color('white'))
                     self.paused = False
+            if event.key==pyg.K_h:
+                self.hintStroke()
             if event.key==pyg.K_ESCAPE:
                 sys.exit()
         if not self.paused:
@@ -116,9 +118,6 @@ class Kunren:
             if event.type == pyg.MOUSEMOTION:
                 self.drawStroke()
 
-
-def printHelp():
-    print('unhelpful help message')
 
 def main():
     parser = argparse.ArgumentParser()
