@@ -15,6 +15,7 @@ import re
 
 class Kunren:
     def __init__(self,char=0):
+        checkforkanjivg()
         pyg.init()
         self.startThreshold = 10
         self.drawThreshold = 25
