@@ -10,16 +10,15 @@ from .ankiconnect import *
 from .utils import *
 from .kanjivg import *
 
-
-
-
 class Kunren:
-    def __init__(self,char=None,field="Expression",startThreshold=10,drawThreshold=25):
+    def __init__(self,char=None,field="Expression",startThreshold=None,drawThreshold=None,size=109):
         pyg.init()
-        self.startThreshold = startThreshold
-        self.drawThreshold = drawThreshold
+        self.size = size
+        self.startThreshold = int(startThreshold*(size/109))
+        self.drawThreshold = int(drawThreshold*(size/109))
+        self.nstrokes = int(200*(size/109))
         self.field = field
-        self.screen = pyg.display.set_mode((109,109))
+        self.screen = pyg.display.set_mode((size,size))
         self.screen.fill(pyg.Color('white'))
         self.draw = False
         self.stroke = []
@@ -29,7 +28,8 @@ class Kunren:
             self.exp = splitKanji(self.card)
         else:
             self.exp = splitKanji(char)
-        self.strokes = [parse(i,200) for i in self.exp]
+
+        self.strokes = self.getStrokes()
         self.kanji = 0
         self.curstroke = 0
         self.error = [0,0] #misstarts,total pixel error
@@ -37,7 +37,7 @@ class Kunren:
 
         while True:
             if self.paused:
-                if self.kanji<=len(self.exp)-1:
+                if self.kanji<len(self.exp)-1:
                     self.nextKanji()
                 else:
                     newcard = getCard(self.field)
@@ -48,10 +48,13 @@ class Kunren:
                 self.inputListen(event)
             pyg.display.flip()
 
+    def getStrokes(self):
+        return [parse(i,self.size,self.nstrokes) for i in self.exp]
+
     def newCard(self,card):
         self.card = card
         self.exp = splitKanji(self.card)
-        self.strokes = [parse(i,200) for i in self.exp]
+        self.strokes = self.getStrokes()
         self.paused = False
         self.kanji,self.curstroke = 0,0
         self.redraw(self.kanji,self.curstroke)
@@ -62,11 +65,17 @@ class Kunren:
         self.curstroke=0
         self.kanji+=1
         self.error = [0,0]
+
+        if self.kanji>len(self.exp)-1:
+            self.paused=True
+            return
+        else:
+            self.paused=False
+
         self.redraw(self.kanji,self.curstroke)
-        self.paused=False
 
     def printSummary(self):
-        print("kanji:",self.exp[self.kanji].character,"finished. misstarts:",self.error[0],"avg pixel error:",self.error[1]/len(self.strokes[self.kanji]))
+        print("kanji:",self.exp[self.kanji].character,"finished | misstarts:",self.error[0],"avg px error:",self.error[1]/len(self.strokes[self.kanji]))
 
 
 
@@ -92,7 +101,7 @@ class Kunren:
             self.redraw(self.kanji,self.curstroke)
         self.draw = False
 
-        if self.curstroke>=len(self.strokes[self.kanji]):
+        if self.curstroke==len(self.strokes[self.kanji]):
             self.paused = True
 
     def drawStroke(self):
@@ -101,10 +110,6 @@ class Kunren:
                           self.p,pyg.mouse.get_pos())
             self.p = pyg.mouse.get_pos()
             self.stroke.append(pyg.mouse.get_pos())
-
-    def correctStroke(self):
-        self.redraw(self.kanji,self.curstroke)
-        self.curstroke+=1
 
     def redraw(self,kanji,number):
         self.screen.fill(pyg.Color('white'))
@@ -126,8 +131,6 @@ class Kunren:
     def grade(self,stroke,real,thresh):
         if len(stroke)==0:
             return False
-        if len(stroke)<20:
-            thresh+=10
         threshold = thresh
         sumdiff = 0
         for n,i in enumerate(real):
@@ -163,8 +166,9 @@ def main():
     parser.add_argument('-s',default=5,type=int,help="Start point size in px. default 5px")
     parser.add_argument('-d',default=25,type=int,help="Stroke forgiveness in average px from actual. default 25px")
     parser.add_argument('--field',default="Expression",type=str,help="name of anki card field containing kanji")
+    parser.add_argument('--size',default=300,type=int,help="Length of the side of square canvas. Default 300px")
     args = vars(parser.parse_args())
-    kunren = Kunren(startThreshold=args['s'],drawThreshold=args['d'],field=args['field'])
+    kunren = Kunren(startThreshold=args['s'],drawThreshold=args['d'],field=args['field'],size=args['size'])
 
 
 main()

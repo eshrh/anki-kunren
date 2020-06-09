@@ -17,6 +17,7 @@ optional arguments:
 + `-s S` Start point size in px. defaults to 5px
 + `-d D` Stroke forgiveness in average px from actual. defaults to 25px
 + `--field FIELD` name of anki card field containing kanji. defaults to "Expression"
++ `--size SIZE` Length of a size of the square canvas in pixels. Defaults to 300.
 
 While running, you can use the following controls:
 + `h`: hint the current stroke
@@ -30,7 +31,6 @@ It is licensed by Ulrich Apel under the [Creative Commons Attribution Share-Alik
 The KanjiVG ascii filename code is taken from [Kanji Colorizer](https://github.com/cayennes/kanji-colorize) which was also the source of my initial inspiration.
 
 ## TODO
-+ scale up svgs
 + catch all indexoutofbounds
 + smoother kanji lines
 + different coloring for different parts of stroke based on how wrong it is.

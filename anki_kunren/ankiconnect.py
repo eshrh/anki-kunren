@@ -21,3 +21,4 @@ def getCard(field):
     kanji = card['fields'][field]['value']
     return kanji
 
+
