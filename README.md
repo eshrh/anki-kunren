@@ -10,7 +10,7 @@ This is a work in progress.
 ## Usage
 **Open Anki and begin a review. You can then use `kunren` as follows:**
 
-usage: `kunren [-h] [-s S] [-d D] [--field FIELD]`
+usage: `kunren [-h] [-s S] [-d D] [--field FIELD] [--size SIZE]`
 
 optional arguments:
 + `-h, --help` Show help message
@@ -23,6 +23,9 @@ While running, you can use the following controls:
 + `h`: hint the current stroke
 + `n`: next kanji in the expression
 + `esc`: quit
+
+### Notes
++ When the size parameter is changed, all tolerances get multiplied by the ratio of `size/109`.
 
 ## Other
 This project uses KanjiVG stroke order data.
