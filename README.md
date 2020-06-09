@@ -23,6 +23,7 @@ While running, you can use the following controls:
 + `h`: hint the current stroke
 + `n`: next kanji in the expression
 + `esc`: quit
++ `c`: refresh the current card shown. This is done automatically when all characters have been drawn, but would slow the program to a crawl if checked for every frame.
 
 ### Notes
 + When the size parameter is changed, all tolerances get multiplied by the ratio of `size/109`.
