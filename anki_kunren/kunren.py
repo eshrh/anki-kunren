@@ -34,6 +34,7 @@ class Kunren:
         self.curstroke = 0
         self.error = [0,0] #misstarts,total pixel error
         self.paused = False
+        self.segment = 0
 
         while True:
             if self.paused:
@@ -75,14 +76,13 @@ class Kunren:
         self.redraw(self.kanji,self.curstroke)
 
     def printSummary(self):
-        print("kanji:",self.exp[self.kanji].character,"finished | misstarts:",self.error[0],"avg px error:",self.error[1]/len(self.strokes[self.kanji]))
-
-
+        print("kanji:",self.exp[self.kanji].character,
+              "finished | misstarts:",self.error[0],
+              "avg px error:",self.error[1]/len(self.strokes[self.kanji]))
 
     def startStroke(self):
         if self.paused:
             return
-
         start = self.strokes[self.kanji][self.curstroke][0]
         if pythagDistance(start,pyg.mouse.get_pos())>self.startThreshold:
             start = [int(i) for i in self.strokes[self.kanji][self.curstroke][0]]
@@ -100,7 +100,9 @@ class Kunren:
         else:
             self.redraw(self.kanji,self.curstroke)
         self.draw = False
+        self.checkPause()
 
+    def checkPause(self):
         if self.curstroke==len(self.strokes[self.kanji]):
             self.paused = True
 
@@ -124,9 +126,27 @@ class Kunren:
         pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji])
 
     def hintStroke(self):
-        pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
+        if self.curstroke<len(self.strokes[self.kanji]):
+            pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
         #TODO slow draw hints
-        #TODO catch last stroke
+
+    def animateStroke(self,kj,stroke):
+        if self.segment>=len(self.strokes[kj][stroke])-2:
+            self.segment=0
+            self.curstroke+=1
+            pyg.time.set_timer(pyg.USEREVENT,0)
+            self.checkPause()
+            return
+
+        pyg.draw.aaline(self.screen,pyg.Color('blue'),
+                        self.strokes[kj][stroke][self.segment],self.strokes[kj][stroke][self.segment+1])
+            #time.sleep(10)
+
+        self.segment+=1
+        pyg.time.set_timer(pyg.USEREVENT,10)
+
+
+
 
     def grade(self,stroke,real,thresh):
         if len(stroke)==0:
@@ -141,15 +161,19 @@ class Kunren:
         return avg<=thresh
 
     def inputListen(self, event):
+        if event.type==pyg.USEREVENT:
+            self.animateStroke(self.kanji,self.curstroke)
+
         if event.type==pyg.KEYDOWN:
             if event.key==pyg.K_n:
                 if not self.kanji==len(self.exp)-1:
                     self.nextKanji()
             if event.key==pyg.K_c:
                 self.newCard(getCard(self.field))
-
             if event.key==pyg.K_h:
                 self.hintStroke()
+            if event.key==pyg.K_a:
+                self.animateStroke(self.kanji,self.curstroke)
             if event.key==pyg.K_ESCAPE:
                 sys.exit()
         if not self.paused:
