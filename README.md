@@ -21,9 +21,10 @@ optional arguments:
 + `--size SIZE` Length of a size of the square canvas in pixels. Defaults to 300.
 
 While running, you can use the following controls:
-+ `h`: hint the current stroke
-+ `a`: animate the current stroke
-+ `n`: next kanji in the expression
++ `h`: **h**int the current stroke
++ `a`: **a**nimate the current stroke
++ `d`: **d**raw all strokes
++ `n`: **n**ext kanji in the expression
 + `esc`: quit
 + `c`: refresh the current card shown. This is done automatically when all characters have been drawn, but would slow the program to a crawl if checked for every frame.
 
