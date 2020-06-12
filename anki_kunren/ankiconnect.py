@@ -1,5 +1,7 @@
 import json
 import urllib.request
+
+#this section is taken from the anki-connection documentation.
 def request(action, **params):
     return {'action': action, 'params': params, 'version': 6}
 
