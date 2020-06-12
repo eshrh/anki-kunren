@@ -14,7 +14,7 @@ class Kunren:
     def __init__(self,char=None,field="Expression",startThreshold=None,drawThreshold=None,size=109):
         pyg.init()
         self.size = size
-        self.startThreshold = int(startThreshold*(size/109))
+        self.startThreshold = int(startThreshold*(size/109)) #scale up thresholds
         self.drawThreshold = int(drawThreshold*(size/109))
         self.nstrokes = int(200*(size/109))
         self.field = field
@@ -23,6 +23,7 @@ class Kunren:
         self.draw = False
         self.stroke = []
         self.p = (0,0) #keeps track of previous x and y of mouse to draw continuous lines.
+        # actually get the card from anki connect here
         if char==None:
             self.card = getCard(field)
             self.exp = splitKanji(self.card)
@@ -30,15 +31,16 @@ class Kunren:
             self.exp = splitKanji(char)
 
         self.strokes = self.getStrokes()
-        self.kanji = 0
-        self.curstroke = 0
+        self.kanji = 0 #index of current kanji
+        self.curstroke = 0 #index of current stroke
         self.error = [0,0] #misstarts,total pixel error
-        self.paused = False
-        self.segment = 0
-        self.currentlyAnimating = False
-        self.curAnimateStroke = -1
+        self.paused = False #we check for new cards and finished kanji when paused, and disable all user drawing.
+        self.segment = 0 # used in animating strokes
+        self.currentlyAnimating = False # used in animating all strokes to detect when finished
+        self.curAnimateStroke = -1 #index of currently animating stroke. -1 because it will start by incrementing.
 
         while True:
+            #check for new cards and finished kanji while paused
             if self.paused:
                 if self.kanji<len(self.exp)-1:
                     self.nextKanji()
@@ -47,6 +49,7 @@ class Kunren:
                     if newcard != self.card:
                         self.newCard(newcard)
 
+            # get and process all user input, then update the screen.
             for event in pyg.event.get():
                 self.inputListen(event)
             pyg.display.flip()
@@ -78,11 +81,13 @@ class Kunren:
         self.redraw(self.kanji,self.curstroke)
 
     def printSummary(self):
+        #prints summary of kanji drawing.
         print("kanji:",self.exp[self.kanji].character,
               "finished | misstarts:",self.error[0],
               "avg px error:",self.error[1]/len(self.strokes[self.kanji]))
 
     def startStroke(self):
+        #starts a stroke, which must be within the start circle.
         if self.paused:
             return
         start = self.strokes[self.kanji][self.curstroke][0]
@@ -96,6 +101,7 @@ class Kunren:
             self.p = pyg.mouse.get_pos()
 
     def endStroke(self):
+        #finish the stroke
         if self.grade(self.stroke,self.strokes[self.kanji][self.curstroke],self.drawThreshold):
             self.curstroke+=1
             self.redraw(self.kanji,self.curstroke)
@@ -123,15 +129,13 @@ class Kunren:
     def displayNextStroke(self):
         pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji][self.curstroke])
 
-    def displayCurrentKanji(self,kanji):
-        #broken
-        pyg.draw.aalines(self.screen,pyg.Color('blue'),False,self.strokes[self.kanji])
-
     def hintStroke(self):
         if self.curstroke<len(self.strokes[self.kanji]):
             pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
 
     def animateStroke(self,kj,stroke):
+        #basically a stacked queue of events that sequentially draws segments of a line
+        #while not blocking user input.
         if self.segment>=len(self.strokes[kj][stroke])-2:
             self.segment=0
             self.curstroke+=1
@@ -147,6 +151,7 @@ class Kunren:
         pyg.time.set_timer(pyg.USEREVENT,10)
 
     def animateAll(self,kanji):
+        #another event stack that manages animateStroke()
         if self.curAnimateStroke>=len(self.strokes[kanji])-1:
             self.curAnimateStroke = -1
             pyg.time.set_timer(pyg.USEREVENT+1,0)
@@ -157,6 +162,7 @@ class Kunren:
         pyg.time.set_timer(pyg.USEREVENT+1,200)
 
     def grade(self,stroke,real,thresh):
+        #check if average minimum errors is lesser than the forgiveness.
         if len(stroke)==0:
             return False
         threshold = thresh
