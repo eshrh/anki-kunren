@@ -128,7 +128,6 @@ class Kunren:
     def hintStroke(self):
         if self.curstroke<len(self.strokes[self.kanji]):
             pyg.draw.aalines(self.screen,pyg.Color('grey'),False,self.strokes[self.kanji][self.curstroke])
-        #TODO slow draw hints
 
     def animateStroke(self,kj,stroke):
         if self.segment>=len(self.strokes[kj][stroke])-2:
@@ -140,13 +139,8 @@ class Kunren:
 
         pyg.draw.aaline(self.screen,pyg.Color('blue'),
                         self.strokes[kj][stroke][self.segment],self.strokes[kj][stroke][self.segment+1])
-            #time.sleep(10)
-
         self.segment+=1
         pyg.time.set_timer(pyg.USEREVENT,10)
-
-
-
 
     def grade(self,stroke,real,thresh):
         if len(stroke)==0:
@@ -189,10 +183,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s',default=5,type=int,help="Start point size in px. default 5px")
     parser.add_argument('-d',default=25,type=int,help="Stroke forgiveness in average px from actual. default 25px")
-    parser.add_argument('--field',default="Expression",type=str,help="name of anki card field containing kanji")
+    parser.add_argument('--field',default="Vocabulary-Kanji",type=str,help="name of anki card field containing kanji. Defaults to \"Vocabulary-Kanji\"")
     parser.add_argument('--size',default=300,type=int,help="Length of the side of square canvas. Default 300px")
     args = vars(parser.parse_args())
     kunren = Kunren(startThreshold=args['s'],drawThreshold=args['d'],field=args['field'],size=args['size'])
-
 
 main()

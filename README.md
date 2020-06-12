@@ -18,7 +18,7 @@ optional arguments:
 + `-h, --help` Show help message
 + `-s S` Start point size in px. defaults to 5px
 + `-d D` Stroke forgiveness in average px from actual. defaults to 25px
-+ `--field FIELD` name of anki card field containing kanji. defaults to "Expression"
++ `--field FIELD` name of anki card field containing kanji. defaults to "Vocabulary-Kanji"
 + `--size SIZE` Length of a size of the square canvas in pixels. Defaults to 300.
 
 While running, you can use the following controls:
