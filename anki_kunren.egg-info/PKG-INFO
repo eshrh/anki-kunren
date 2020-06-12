@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: anki-kunren
-Version: 1.3.0
+Version: 1.4.0
 Summary: Anki practice tool to drill japanese kanji stroke order and practice writing.
 Home-page: https://github.com/eshrh/anki-kunren
 Author: esrh
@@ -8,7 +8,6 @@ Author-email: esrh@netc.eu
 License: UNKNOWN
 Description: # Anki Kunren (暗記 訓練)
         Anki Kunren is a program to drill japanese kanji stroke order and practice writing in sync with an Anki study session.
-        This is a work in progress.
         
         ![screenshot](https://github.com/eshrh/anki-kunren/blob/master/2020-06-09-110417_581x590_scrot.png)
         
@@ -26,7 +25,7 @@ Description: # Anki Kunren (暗記 訓練)
         + `-h, --help` Show help message
         + `-s S` Start point size in px. defaults to 5px
         + `-d D` Stroke forgiveness in average px from actual. defaults to 25px
-        + `--field FIELD` name of anki card field containing kanji. defaults to "Expression"
+        + `--field FIELD` name of anki card field containing kanji. defaults to "Vocabulary-Kanji"
         + `--size SIZE` Length of a size of the square canvas in pixels. Defaults to 300.
         
         While running, you can use the following controls:
