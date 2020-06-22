@@ -1,3 +1,5 @@
+# Development of this project has moved to [gitlab](https://gitlab.com/esrh/anki-kunren)
+
 # Anki Kunren (暗記 訓練)
 Anki Kunren is a program to drill japanese kanji stroke order and practice writing in sync with an Anki study session.
 
